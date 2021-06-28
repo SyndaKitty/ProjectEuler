@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Numerics;
 
-
 class Program {
     static void Main(string[] args) {
         var lines = File.ReadAllLines("numbers.txt");
