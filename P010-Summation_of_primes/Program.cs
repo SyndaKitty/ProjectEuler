@@ -3,21 +3,35 @@ using System.Collections.Generic;
 
 class Program {
     static void Main(string[] args) {
-        List<int> primes = new List<int>(2);
+        const int limit = 2_000_000;
+        var primes = Primes(limit);
         decimal total = 2;
-        for (int i = 3; i < 2_000_000; i += 2) {
-            bool valid = true;
-            foreach (var p in primes) {
-                if (i % p == 0) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) {
+        for (int i = 3; i < limit; i += 2) {
+            if (primes.Contains(i)) {
                 total += i;
-                primes.Add(i);
             }
         }
         Console.WriteLine(total);
+    }
+
+    static HashSet<int> Primes(int n) {
+        // Sieve of Erotosthenes
+        bool[] isPrime = new bool[n];
+        for (int i = 2; i < n; i++) {
+            isPrime[i] = true;
+        }
+        for (int i = 3; i < (int)(Math.Sqrt(n) + 1); i += 2) {
+            int index = i * 2;
+            while (index < n) {
+                isPrime[index] = false;
+                index += i;
+            }
+        }
+        HashSet<int> result = new HashSet<int>(n);
+        for (int i = 3; i < n; i += 2) {
+            if (isPrime[i]) 
+                result.Add(i);
+        }
+        return result;
     }
 }
