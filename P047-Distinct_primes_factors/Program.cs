@@ -1,22 +1,17 @@
 using System;
-using System.IO;
-using System.Linq;
 using System.Collections.Generic;
 
 class Program {
     static void Main(string[] args) {
         bool[] res = new bool[4];
+        int j = 0;
         for (int i = 644;; i++) {
-            res[0] = PrimeFactorization(i).Keys.Count == 4;
+            res[j++ % 4] = PrimeFactorization(i).Keys.Count == 4;
             
             if (res[0] && res[1] && res[2] && res[3]) {
                 Console.WriteLine(i-3);
                 return;
             }
-            
-            res[3] = res[2];
-            res[2] = res[1];
-            res[1] = res[0];
         }
     }
 
