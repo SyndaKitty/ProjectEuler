@@ -1,7 +1,4 @@
 using System;
-using System.IO;
-using System.Linq;
-using System.Collections.Generic;
 
 class Program {
     static void Main(string[] args) {
@@ -12,8 +9,8 @@ class Program {
             for (int p = 0; p < i; p++) {
                 subSum = (subSum * i) % m;
             }
-            sum = (sum + subSum) % m;
+            sum += subSum;
         }
-        Console.WriteLine(sum);
+        Console.WriteLine(sum % m);
     }
 }
