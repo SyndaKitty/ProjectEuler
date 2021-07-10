@@ -1,34 +1,44 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections;
+using System.Diagnostics;
 
 class Program {
     static void Main(string[] args) {
-        var p = new Primes(1_000_000);
-        int[] rollingSum = p.List.TakeLast<int>(20).ToArray(); 
-        int r = 0, i = 0;
-        int sum = rollingSum.Sum<int>(x => x);
-        for (i = p.Count - 1; sum > 1_000_000; i--) {
-            sum -= rollingSum[r];
-            rollingSum[r] = p[i];
-            sum += rollingSum[r];
-            r = (r + 1) % rollingSum.Length;
+        Stopwatch sw = Stopwatch.StartNew();
+        var P = new Primes(100_000);
+        var sourceRow = new List<int>();
+        int sum = 0;
+        foreach (var p in P) {
+            if (sum + p < 1_000_000) {
+                sum += p;
+                sourceRow.Add(p);
+            }
+            else break;
         }
-
-        var t = new KaiTriangle<int>(p.List.Take(i));
-        var best = new { score = 0, prime = 0};
-        foreach (var row in t.GenerateAscending(1_000_000)) {
-            foreach (var val in row) {
-                if (!p.Contains(val.Sum)) continue;
-                if (val.Length > best.score) {
-                    best = new { score = val.Length, prime = val.Sum };
+        
+        for (int level = 1; level < sourceRow.Count - 1; level++) {
+            for (int h = 0; h <= level; h++) {
+                int s = sum;
+                int l = level - h;
+                for (int li = 0; li < l; li++) {
+                    s -= sourceRow[li];
+                }
+                for (int hi = 0; hi < h; hi++) {
+                    s -= sourceRow[sourceRow.Count - hi - 1];
+                }
+                if (P.Contains(s)) {
+                    sw.Stop();
+                    Console.WriteLine(s);
+                    return;
                 }
             }
         }
-        Console.WriteLine($"{best.prime} {best.score}");
     }
 }
 
+// Not used for this solution, but nice to have around
 class KaiTriangle<T> where T : IComparable<T> {
     T[] sourceRow;
     int length;
@@ -97,7 +107,7 @@ class KaiTriangle<T> where T : IComparable<T> {
     }
 }
 
-class Primes {
+class Primes : IEnumerable<int> {
     public int MaxChecked;
     public List<int> List;
     public bool[] Array;
@@ -143,5 +153,15 @@ class Primes {
                 List.Add(i);
             }
         }
+    }
+
+    public IEnumerator<int> GetEnumerator()
+    {
+        return ((IEnumerable<int>)List).GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return ((IEnumerable)List).GetEnumerator();
     }
 }
